@@ -24,6 +24,12 @@ const formSchema = z.object({
   quantity: z.number().min(0).default(0),
 })
 
+type FormValues = {
+  amount: number;
+  description?: string;
+  quantity: number;
+}
+
 interface Props {
   isOpen: boolean;
   product?: createProductType;
@@ -32,7 +38,7 @@ interface Props {
 
 const UpSertForm = ({isOpen, onSuccess, product}: Props) => {
       const { execute, isPending } = useAction(createOrUpdateProduct);
-      const form = useForm<z.infer<typeof formSchema>>({
+      const form = useForm<FormValues>({
       shouldUnregister: true,
       resolver: zodResolver(formSchema),
       defaultValues: {
@@ -52,7 +58,7 @@ const UpSertForm = ({isOpen, onSuccess, product}: Props) => {
     }
   }, [isOpen, form, product]);
 
-    const onSubmit = (data: z.infer<typeof formSchema>) => {
+    const onSubmit = (data: FormValues) => {
         execute({
           id: product?.id,
           amount: data.amount*100,
