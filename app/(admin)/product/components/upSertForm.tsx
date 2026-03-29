@@ -21,7 +21,7 @@ import { useAction } from 'next-safe-action/hooks'
 const formSchema = z.object({
   amount: z.number({ message: "Campo obrigatório" }),
   description: z.string().min(0).optional(),
-  quantity: z.coerce.number().optional().default(0),
+  quantity: z.number().min(0).default(0),
 })
 
 interface Props {
@@ -52,7 +52,7 @@ const UpSertForm = ({isOpen, onSuccess, product}: Props) => {
     }
   }, [isOpen, form, product]);
 
-    const onSubmit =  (data: z.infer<typeof formSchema>) => {
+    const onSubmit = (data: z.infer<typeof formSchema>) => {
         execute({
           id: product?.id,
           amount: data.amount*100,
@@ -116,7 +116,11 @@ const UpSertForm = ({isOpen, onSuccess, product}: Props) => {
             <FormItem>
               <FormLabel>Quantidade</FormLabel>
               <FormControl>
-                <Input type="number" {...field} />
+                <Input 
+                  type="number" 
+                  {...field}
+                  onChange={(e) => field.onChange(Number(e.target.value))}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
