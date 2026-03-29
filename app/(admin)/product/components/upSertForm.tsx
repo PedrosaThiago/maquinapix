@@ -21,14 +21,12 @@ import { useAction } from 'next-safe-action/hooks'
 const formSchema = z.object({
   amount: z.number({ message: "Campo obrigatório" }),
   description: z.string().min(0).optional(),
-  quantity: z.number().min(0).default(0),
+  quantity: z
+  .coerce
+  .number()
+  .refine((val) => !isNaN(val), { message: "Informe um número válido" })
+  .optional(),
 })
-
-type FormValues = {
-  amount: number;
-  description?: string;
-  quantity: number;
-}
 
 interface Props {
   isOpen: boolean;
@@ -38,10 +36,9 @@ interface Props {
 
 const UpSertForm = ({isOpen, onSuccess, product}: Props) => {
       const { execute, isPending } = useAction(createOrUpdateProduct);
-      const form = useForm<FormValues>({
+      const form = useForm<z.infer<typeof formSchema>>({
       shouldUnregister: true,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      resolver: zodResolver(formSchema) as any,
+      resolver: zodResolver(formSchema),
       defaultValues: {
         amount: product?.amount ? product.amount/100 : 0,
         description: product?.description ?? "",
@@ -59,7 +56,7 @@ const UpSertForm = ({isOpen, onSuccess, product}: Props) => {
     }
   }, [isOpen, form, product]);
 
-    const onSubmit = (data: FormValues) => {
+    const onSubmit =  (data: z.infer<typeof formSchema>) => {
         execute({
           id: product?.id,
           amount: data.amount*100,
@@ -123,11 +120,7 @@ const UpSertForm = ({isOpen, onSuccess, product}: Props) => {
             <FormItem>
               <FormLabel>Quantidade</FormLabel>
               <FormControl>
-                <Input 
-                  type="number" 
-                  {...field}
-                  onChange={(e) => field.onChange(Number(e.target.value))}
-                />
+                <Input type="number" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
