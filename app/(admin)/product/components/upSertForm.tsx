@@ -40,7 +40,8 @@ const UpSertForm = ({isOpen, onSuccess, product}: Props) => {
       const { execute, isPending } = useAction(createOrUpdateProduct);
       const form = useForm<FormValues>({
       shouldUnregister: true,
-      resolver: zodResolver(formSchema),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      resolver: zodResolver(formSchema) as any,
       defaultValues: {
         amount: product?.amount ? product.amount/100 : 0,
         description: product?.description ?? "",
