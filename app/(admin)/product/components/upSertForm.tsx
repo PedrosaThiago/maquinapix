@@ -19,13 +19,9 @@ import { useAction } from 'next-safe-action/hooks'
 
 
 const formSchema = z.object({
-  amount: z.number({ message: "Campo obrigatório" }),
+  amount: z.number({ message: "Campo obrigatório" }),
   description: z.string().min(0).optional(),
-  quantity: z
-  .coerce
-  .number()
-  .refine((val) => !isNaN(val), { message: "Informe um número válido" })
-  .optional(),
+  quantity: z.coerce.number().optional().default(0),
 })
 
 interface Props {
@@ -104,7 +100,7 @@ const UpSertForm = ({isOpen, onSuccess, product}: Props) => {
           name="description"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Descrição</FormLabel>
+              <FormLabel>Descrição</FormLabel>
               <FormControl>
                 <Input {...field} />
               </FormControl>
